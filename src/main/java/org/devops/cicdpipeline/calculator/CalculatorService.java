@@ -1,6 +1,5 @@
 package org.devops.cicdpipeline.calculator;
 
-import org.devops.cicdpipeline.exception.InvalidInput;
 import org.springframework.stereotype.Service;
 
 @Service
