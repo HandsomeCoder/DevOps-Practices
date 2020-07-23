@@ -1,0 +1,11 @@
+version: '2.0'
+
+services:
+  app:
+    image: handsomecoder/appwar:1.0
+    ports:
+      - "8080:8080"
+  sql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=my-secret
