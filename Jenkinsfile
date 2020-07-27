@@ -19,17 +19,8 @@ pipeline {
             steps {
                 
                 // Run Maven on a Unix agent.
-                sh "mvn -Dmaven.test.failure.ignore=true clean package"
+                sh "mvn clean package"
 
-            }
-
-            post {
-                // If Maven was able to run the tests, even if some of the test
-                // failed, record the test results and archive the jar file.
-                success {
-                    junit '**/target/surefire-reports/TEST-*.xml'
-                    archiveArtifacts 'target/*.jar'
-                }
             }
         }
         
@@ -37,7 +28,7 @@ pipeline {
             steps {
 
                 // Build Docker image
-                sh "docker build -t handsomecoder/application:4.0 ."
+                sh "docker build -t handsomecoder/application:7.0 ."
             }
 
         }
@@ -48,17 +39,19 @@ pipeline {
                      sh "docker login -u handsomecoder -p ${dockerHubCreds}"
                 }
                 
-                sh "docker push handsomecoder/application:4.0"
+                sh "docker push handsomecoder/application:7.0"
             }
 
         }
         
-        stage('Run Container') {
-            steps {
-                sh "docker run -p 9000:9000 -d handsomecoder/application:4.0"
+        stage('Deployment'){
+            steps{
+                withCredentials([string(credentialsId: 'pcfcCreds', variable: 'pcfCreds')]) {
+                    sh 'cf login -a https://api.run.pivotal.io -u harshshah1295@gmail.com -p $pcfCreds'
+                }
+                
+                sh 'cf push application-7.0 --docker-image handsomecoder/application:7.0' 
             }
-
         }
     }
 }
-
